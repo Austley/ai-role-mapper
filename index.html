@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Role Mapper | For Marketing and Communications Roles</title>
+<meta name="description" content="AI Role Mapper: paste a marketing or communications job description. See what AI can take off your plate, where it assists, and where you're irreplaceable. Built from 75 real job descriptions.">
+<style>
+  :root{
+    --ink:#eef2f8; --ink-soft:#b7c2d6; --ink-faint:#8494ac;
+    --bg:#0e1a2b; --card:#16243a; --line:#2a3a55;
+    --b1:#3fae92; --b1-soft:#153229;
+    --b2:#d9a24a; --b2-soft:#33270f;
+    --b3:#8f93e0; --b3-soft:#20244a;
+    --warn:#e07a5c; --warn-soft:#361a10;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding:0 20px 80px}
+  .wrap{max-width:860px;margin:0 auto}
+  header{padding:56px 0 8px;text-align:center}
+  header h1{font-size:clamp(26px,4.5vw,40px);line-height:1.15;letter-spacing:-0.02em}
+  header p.tagline{margin-top:12px;font-size:16px;font-weight:650;color:var(--ink-soft);letter-spacing:.01em}
+  header p.sub{margin:26px auto 0;max-width:560px;color:var(--ink-soft);font-size:16px}
+  .badge-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  .chip{font-size:12.5px;padding:5px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink-soft)}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-top:28px}
+  textarea{width:100%;min-height:230px;border:1px solid var(--line);border-radius:10px;padding:16px;font-size:14.5px;font-family:inherit;color:var(--ink);resize:vertical;background:#101d31}
+  textarea:focus{outline:2px solid var(--b1);outline-offset:1px}
+  .controls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:16px}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field label{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+  select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-size:14px;color:var(--ink);font-family:inherit}
+  button.go{margin-left:auto;background:#eef2f8;color:#0e1a2b;border:none;border-radius:10px;padding:13px 28px;font-size:15.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  button.go:hover{background:#ffffff}
+  .hint{font-size:12.5px;color:var(--ink-faint);margin-top:10px}
+  /* results */
+  #results{display:none}
+  .stage-line{font-size:14px;color:var(--ink-soft);margin-top:26px}
+  .stage-line strong{color:var(--ink)}
+  .bar{display:flex;height:34px;border-radius:9px;overflow:hidden;margin-top:14px;border:1px solid var(--line)}
+  .bar div{display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:#fff;min-width:0;white-space:nowrap;overflow:hidden;transition:width .6s ease}
+  .bar .s1{background:var(--b1)} .bar .s2{background:var(--b2)} .bar .s3{background:var(--b3)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--ink-soft)}
+  .legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+  .legend .l1::before{background:var(--b1)} .legend .l2::before{background:var(--b2)} .legend .l3::before{background:var(--b3)}
+  .disclaim{font-size:12.5px;color:var(--ink-faint);margin-top:8px}
+  .banner{border-radius:10px;padding:14px 16px;font-size:14px;margin-top:16px;border:1px solid}
+  .banner.warn{background:var(--warn-soft);border-color:#5c3021;color:#f3b7a3}
+  .banner.info{background:var(--b3-soft);border-color:#3a3f7a;color:#c3c6f2}
+  .banner.note{background:var(--b2-soft);border-color:#5a4517;color:#ecc98a}
+  .banner strong{display:block;margin-bottom:3px}
+  .bucket{margin-top:30px}
+  .bucket h2{font-size:19px;display:flex;align-items:center;gap:10px}
+  .bucket h2 .dot{width:13px;height:13px;border-radius:4px;flex:none}
+  .bucket p.desc{font-size:13.5px;color:var(--ink-soft);margin:5px 0 12px 23px}
+  .task{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:9px}
+  .task .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .task .name{font-weight:650;font-size:15px}
+  .flag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+  .flag.shift{background:var(--b2-soft);color:#e5b569}
+  .flag.reps{background:var(--b1-soft);color:#8ddcc3}
+  .flag.mod{background:var(--warn-soft);color:#f0a88e}
+  .task .note{font-size:13.5px;color:var(--ink-soft);margin-top:5px}
+  .task .snip{font-size:12.5px;color:var(--ink-faint);margin-top:6px;font-style:italic}
+  .empty{font-size:14px;color:var(--ink-faint);margin-left:23px}
+  .callout{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--b1);border-radius:10px;padding:18px 20px;margin-top:30px}
+  .callout h3{font-size:16px;margin-bottom:6px}
+  .callout p{font-size:14px;color:var(--ink-soft)}
+  .callout p+p{margin-top:8px}
+  details.method{margin-top:40px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 24px}
+  details.method summary{font-weight:650;cursor:pointer;font-size:15.5px}
+  details.method .inner{margin-top:12px;font-size:14px;color:var(--ink-soft)}
+  details.method .inner p+p{margin-top:10px}
+  footer{margin-top:56px;text-align:center;font-size:13.5px;color:var(--ink-faint)}
+  footer a{color:var(--ink-soft)}
+  @media (max-width:600px){ .bar div{font-size:10.5px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>AI Role Mapper</h1>
+  <p class="tagline">Built for marketing and communications roles</p>
+  <p class="sub">Paste in a job description below. The tool breaks it into responsibilities, sorted three ways: what AI can largely handle, where AI assists while a human drives, and where a human is required.</p>
+  <div class="badge-row">
+    <span class="chip">Built from 75 real job descriptions</span>
+    <span class="chip">Runs entirely in your browser</span>
+    <span class="chip">Nothing you paste is stored or sent anywhere</span>
+  </div>
+</header>
+
+<div class="panel">
+  <textarea id="jd" placeholder="Paste the full job description here, responsibilities and all..."></textarea>
+  <div class="controls">
+    <div class="field">
+      <label for="stage">Career stage</label>
+      <select id="stage">
+        <option value="auto" selected>Detect from the JD</option>
+        <option value="early">Early career (0-5 yrs)</option>
+        <option value="mid">Mid-level (6-10 yrs)</option>
+        <option value="senior">Senior / leadership (11+ yrs)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="ctx">Work context</label>
+      <select id="ctx">
+        <option value="auto" selected>Detect from the JD</option>
+        <option value="standard">Standard industry</option>
+        <option value="regulated">Regulated industry</option>
+        <option value="restricted">Restricted environment (clearance, classified)</option>
+      </select>
+    </div>
+    <button class="go" onclick="analyze()">Analyze</button>
+  </div>
+  <p class="hint">Works best with the full responsibilities section included. Analysis is rules-based pattern matching, so it recognizes what it has been taught. It is a starting point for thinking, not a verdict on your career.</p>
+</div>
+
+<div id="results">
+  <p class="stage-line" id="stageLine"></p>
+  <div class="bar" id="bar"></div>
+  <div class="legend">
+    <span class="l1">AI can largely handle</span>
+    <span class="l2">AI assists, human drives</span>
+    <span class="l3">Human required</span>
+  </div>
+  <p class="disclaim">Shares are the rough shape of the detected responsibilities, weighted equally. They are not a prediction about your job's future.</p>
+  <div id="banners"></div>
+  <div id="buckets"></div>
+  <div id="callouts"></div>
+</div>
+
+<details class="method">
+  <summary>How this works (and what it deliberately refuses to do)</summary>
+  <div class="inner">
+    <p><strong>The buckets.</strong> Every responsibility gets sorted by what the work actually requires. "AI can largely handle" covers pattern-based work: monitoring, reporting mechanics, first drafts of templated content, repurposing, workflow operations. "AI assists, human drives" covers work where AI speeds things up but a human owns the framing, the accuracy, or the call: high-stakes writing, strategy, translating complexity, crisis support. "Human required" covers trust, relationships, live judgment, leading people, and being the accountable face. Across all 75 job descriptions this tool was built from, relationship building stayed human in every single one.</p>
+    <p><strong>Context changes the answer.</strong> The same task lands in different buckets depending on stakes. A newsletter draft is routine; a statement during litigation is not. Regulated industries (healthcare, finance, legal, government, defense) shift work toward human review, and classified or clearance environments can rule out AI tools entirely no matter what the task list says. That's why the tool asks about context.</p>
+    <p><strong>Direction of travel.</strong> Some verdicts are stable and some are shifting as AI improves. Tasks marked "shifting" are drifting toward more automation. Treat bucket two as a place to build skill, not a place to hide.</p>
+    <p><strong>Keep your reps.</strong> Some automatable tasks are also how people early in their careers build judgment. You develop crisis instincts by writing a hundred routine statements first. If you're early career, automate the volume but keep some reps, and use AI as a sparring partner that critiques your draft rather than a ghostwriter that replaces it. If you lead a team, automate freely for yourself, but set up junior roles so your people still get their reps. That's how you build your bench.</p>
+    <p><strong>What it refuses to do.</strong> This tool won't tell you a percentage of your job that will "disappear." Jobs are not task lists. What it will tell you is where you have room to automate and get more efficient, so you can spend more time on the parts of the job that need a human: higher-level strategy, relationships, and the work that actually matters.</p>
+  </div>
+</details>
+
+<footer>
+  Built by <a href="https://austley.com" target="_blank" rel="noopener">Austley</a> from 75 real marketing and communications job descriptions. Open source; the full rulebook is in the repo.
+</footer>
+
+</div>
+
+<script>
+/* ============================================================
+   RULEBOOK
+   31 rules + 3 context modifiers, distilled from 75 real
+   marketing/communications job descriptions (entry to C-suite).
+   bucket: 1 = AI largely handles, 2 = AI assists / human drives,
+   3 = human required.
+   travel: "stable" | "shifting" (drifting toward more automation)
+   reps: true = automatable but foundational for skill-building
+   ============================================================ */
+const RULES = [
+  /* ---------- Bucket 1: AI can largely handle ---------- */
+  { id:"monitoring", bucket:1, name:"Media and market monitoring", travel:"stable",
+    note:"Coverage tracking, sentiment, competitors, news cycles. AI watches tirelessly; humans can't and shouldn't.",
+    patterns:[/media monitor/i,/monitor(ing)?\s+(media|coverage|news|the news|brand|sentiment|social)/i,/media audit/i,/social listening/i,/track(ing)?\s+(media|coverage|mentions)/i,/news cycles?/i,/competitive (monitoring|intel(ligence)?)/i,/emerging (narratives|trends)/i] },
+  { id:"dashboards", bucket:1, name:"Routine reporting and dashboards", travel:"stable",
+    note:"Raw digests, performance dashboards, campaign recaps. The strategic report that goes up the chain is different; see bucket two.",
+    patterns:[/dashboards?/i,/coverage (report|summar)/i,/report(ing)? on (key )?(marketing )?metrics/i,/performance (tracking|measurement|report)/i,/kpi/i,/analytics/i,/measure and (report|optimi)/i,/campaign performance/i] },
+  { id:"drafts", bucket:1, name:"First drafts of templated content", travel:"shifting", reps:true,
+    note:"Advisories, newsletters, fact sheets, briefing docs, routine collateral. Anything with an established format.",
+    patterns:[/media advisor(y|ies)/i,/fact sheets?/i,/newsletters?/i,/one[- ]?pagers?/i,/datasheets?/i,/solution briefs?/i,/collateral/i,/briefing (documents?|books?|materials?)/i,/press packages?/i,/tip sheets?/i] },
+  { id:"repurpose", bucket:1, name:"Repurposing content at scale", travel:"stable",
+    note:"One source asset becoming ten channel-specific versions. This is AI's home turf.",
+    patterns:[/repurpos/i,/across (channels|formats|platforms)/i,/adapt(ing)? (content|messag)/i,/content at scale/i,/multi[- ]?format/i] },
+  { id:"workflow", bucket:1, name:"Workflow operations and calendars", travel:"stable",
+    note:"Editorial calendars, intake, routing, scheduling, asset libraries, version control, tracking deliverables.",
+    patterns:[/editorial calendar/i,/content calendar/i,/campaign calendar/i,/marketing calendar/i,/schedul(e|ing)/i,/asset (librar|management|collection|distribution)/i,/version control/i,/track(ing)? (action items|deliverables|articles|multiple projects|changes)/i,/intake/i,/workflow/i,/logistics/i,/maintain(ing)? (organized )?records/i,/data (capture|entry)/i,/audit(ing)? of (existing|current|past)/i] },
+  { id:"synthesis", bucket:1, name:"Research synthesis", travel:"stable",
+    note:"Digesting surveys, transcripts, engagement data, and research piles into themes. Humans decide what the themes mean.",
+    patterns:[/conduct (market|competitive|quick|research)/i,/market research/i,/competitive (research|analysis|landscape)/i,/synthesi[sz]/i,/survey/i,/gather (feedback|insights|data)/i,/research and media/i] },
+  { id:"lifecycle", bucket:1, name:"Personalization and lifecycle mechanics", travel:"stable",
+    note:"Segment-based campaigns, nurture flows, lead scoring, email automation. Humans define the personas; AI runs the machinery.",
+    patterns:[/nurture/i,/lead scor/i,/lifecycle marketing/i,/marketing automation/i,/email (marketing|campaigns|sequences)/i,/segment(ation)?/i,/personali[sz]/i,/drip campaign/i,/crm/i,/marketing lists/i] },
+  { id:"medialists", bucket:1, name:"Media list building", travel:"stable", reps:true,
+    note:"Building and maintaining lists is AI work. Knowing which reporter actually matters for this story is learned by doing it.",
+    patterns:[/media lists?/i,/press lists?/i,/build(ing)? and maintain(ing)? (media|press)/i] },
+  { id:"socialexec", bucket:1, name:"Social media execution", travel:"shifting", reps:true,
+    note:"Scheduling, calendar execution, routine posts. Voice and community judgment stay human; the machinery doesn't.",
+    patterns:[/social media (content|calendars?|scheduling|posts?|promotion)/i,/execute social/i,/post(ing)? (written|content|on social)/i,/social media collaboration/i,/organic social/i] },
+  { id:"adops", bucket:1, name:"In-platform advertising mechanics", travel:"shifting",
+    note:"Campaign setup, trafficking, bid management, budget pacing, QA. Shifting faster than anything else in this bucket, because the ad platforms themselves are the automators: smart bidding and automated campaign management are being built into the products. The career path moves up the stack to measurement science.",
+    patterns:[/traffick(ing)?/i,/bid (management|strategies|strategy)/i,/smart bidding/i,/budget pacing/i,/campaign setup/i,/paid (search|social|media)/i,/programmatic/i,/\bsem\b/i,/media (buying|activation)/i,/dynamic creative|\bdco\b/i,/ad (ops|operations)/i,/\broas\b|\bcpa\b/i,/dsps?\b|dv360|trade desk|ads manager/i,/\bctv\b|\bolv\b/i] },
+
+  /* ---------- Bucket 2: AI assists, human drives ---------- */
+  { id:"hswriting", bucket:2, name:"High-stakes external writing", travel:"shifting", reps:true,
+    note:"Press releases, statements, op-eds, executive messaging. AI accelerates drafting; a human owns every word because credibility is on the line.",
+    patterns:[/press releases?/i,/statements?/i,/op[- ]?eds?/i,/talking points/i,/executive messaging/i,/bylines?/i,/white ?papers?/i,/media pitch/i,/pitches/i,/q&as?/i] },
+  { id:"translate", bucket:2, name:"Translating complexity", travel:"shifting",
+    note:"Policy, technical, or regulatory content into plain language. AI is a strong translator and a confident hallucinator; human verification is non-negotiable.",
+    patterns:[/translat(e|ing|es).{0,40}(complex|technical|policy|capabilities|innovation|concepts)/i,/simplif(y|ying).{0,30}(complex|sophisticated|technical)/i,/complex (policy|technolog|technical|topics|systems|products)/i,/technical (concepts|capabilities|translation)/i,/accessible to non[- ]?technical/i] },
+  { id:"strategy", bucket:2, name:"Strategy development", travel:"stable",
+    note:"AI widens the option set and stress-tests thinking. The choice of direction is human.",
+    patterns:[/develop.{0,30}strateg/i,/(communications?|marketing|brand|media|content|pr|go[- ]?to[- ]?market|gtm|social media|engagement) strateg/i,/positioning/i,/messaging (framework|architecture|strategy)/i,/value propositions?/i,/narrative/i] },
+  { id:"analysis", bucket:2, name:"Turning analysis into decisions", travel:"stable",
+    note:"AI finds the pattern; the human decides what it means and what to do about it.",
+    patterns:[/data[- ]driven (insights|decisions|approach)/i,/actionable (insights|recommendations)/i,/attribution/i,/funnel (diagnos|analysis|performance)/i,/optimi[sz]e (spend|campaigns|performance|conversion)/i,/roi/i,/insights (to|into|that)/i] },
+  { id:"leaderreport", bucket:2, name:"Leadership-facing reporting", travel:"stable",
+    note:"The report you send leadership shapes how they value your function. What you surface and how you frame a miss is political work disguised as admin work. AI builds the data layer; you own the framing.",
+    patterns:[/executive (dashboards?|updates?|reporting|summaries)/i,/board (updates?|meetings?|presentations?|reviews?)/i,/leadership updates?/i,/business reviews?/i,/present(ing)?.{0,30}(to executive|to leadership|strategic recommendations)/i,/investor (communications?|relations|updates?)/i] },
+  { id:"prep", bucket:2, name:"Prep for human moments", travel:"stable",
+    note:"Briefing docs, interview prep, message frameworks. AI builds the prep; the moment itself belongs to a human.",
+    patterns:[/interview prep/i,/media training/i,/prepar(e|ing|ation).{0,40}(executives?|leaders?|spokespeople|spokespersons?|senior)/i,/briefing (pipelines?|process)/i,/message framing/i] },
+  { id:"crisisai", bucket:2, name:"Crisis support systems", travel:"shifting",
+    note:"AI runs war-room simulations, pre-drafts scenario statements, checks consistency against mission and past statements, and flags when messaging diverges from what a spokesperson said before. It catches what humans miss under pressure. The live call stays human.",
+    patterns:[/crisis/i,/rapid[- ]?(response|offense)/i,/issues management/i,/breaking news/i,/reputational? (risk|issues|management)/i,/war[- ]?room/i,/scenario/i,/holding statements?/i] },
+  { id:"voice", bucket:2, name:"Voice capture and ghostwriting", travel:"stable",
+    note:"Writing as a specific person. AI drafts and checks consistency, but authentic voice comes from human proximity to the person. An executive presence that readers clock as AI-written damages the reputation it exists to build.",
+    patterns:[/ghostwrit/i,/speechwrit/i,/speeches/i,/ceo('s)? (communications?|voice|linkedin|social)/i,/executive('s)? (voice|linkedin|social presence)/i,/in the voice of/i,/author('s)? voice/i,/executive communications?/i] },
+  { id:"campaign", bucket:2, name:"Campaign concepting and development", travel:"shifting",
+    note:"AI generates variants and handles production mechanics. The creative idea that makes a campaign land, and the call on what's on-brand, stay human.",
+    patterns:[/integrated (marketing )?campaigns?/i,/campaign (strategy|development|planning|concepts?)/i,/360[- ]degree/i,/multi[- ]?channel campaigns?/i,/creative (campaigns?|concepts?|direction|strategy)/i,/launch (plans?|strategy|campaigns?)/i,/product launch/i] },
+  { id:"content", bucket:2, name:"Substantive content creation", travel:"shifting", reps:true,
+    note:"Blogs, case studies, thought leadership, video. Splits in two: getting the story out of a human (interview, whiteboard session) is human work; drafting and production from it is AI-assisted.",
+    patterns:[/case stud(y|ies)/i,/blog/i,/thought leadership/i,/customer stories/i,/success stories/i,/testimonials?/i,/video (content|production|scripts?|briefs?)/i,/webinars?/i,/content (creation|development|production|strategy)/i,/storytelling/i,/rfps?|rfis?/i,/proposals?/i] },
+  { id:"relupkeep", bucket:2, name:"Relationship upkeep", travel:"stable",
+    note:"AI tracks beat changes, maintains interaction history, times the follow-up, drafts the personalization. You send it and you show up. Upkeep is assistable; building trust is not.",
+    patterns:[/follow[- ]?ups?/i,/maintain(ing)? (a )?(database|contact|records of)/i,/interaction history/i,/coordinate (activities|with)/i] },
+  { id:"community", bucket:2, name:"Community management at scale", travel:"stable",
+    note:"AI triages the volume: routine responses, sentiment monitoring, around-the-clock coverage. Humans own the voice moments: the witty reply, the graceful save with an angry customer, knowing when a thread is becoming a crisis. AI handles volume; humans handle voice.",
+    patterns:[/community management/i,/community (engagement|cultivation|building)/i,/respond(ing)? to (comments|messages|mentions|dms)/i,/comments, (direct messages|mentions)/i,/online communit/i,/fans into advocates/i,/engagement philosophy/i] },
+  { id:"designcraft", bucket:2, name:"Design and production craft", travel:"shifting", reps:true,
+    note:"Layouts, asset adaptation, motion graphics, video editing, template systems. Image and video generation is moving this faster than any other category in this bucket. Original concept and art direction stay with creative taste; production craft is becoming AI-accelerated execution.",
+    patterns:[/graphic design(ers?)?/i,/photoshop|illustrator|indesign|premiere|after effects|capcut|canva|figma/i,/adobe creative/i,/layouts?\b/i,/motion graphics/i,/video (editing|production)/i,/design (standards|systems|templates?)/i,/photography/i,/visual (identity|storytelling|assets)/i,/short[- ]form video|reels|tiktoks/i] },
+  { id:"measurement", bucket:2, name:"Measurement science", travel:"stable",
+    note:"Incrementality testing, MMM, attribution modeling, geo-experiments. AI does the math; humans design the experiment, choose which model to believe, and decide what 'incremental' actually means. This is where paid media careers move as campaign mechanics automate from underneath.",
+    patterns:[/incrementality/i,/\bmmm\b|media mix model/i,/multi[- ]?touch attribution|\bmta\b/i,/\bltv\b|\bcac\b/i,/holdout|geo[- ]?experiments?|causal inference/i,/attribution (models?|methodolog)/i,/lead scoring system/i,/measurement framework/i,/a\/b test|experimentation|test[- ]and[- ]learn/i] },
+
+  /* ---------- Bucket 3: Human required ---------- */
+  { id:"relationships", bucket:3, name:"Relationship building", travel:"stable",
+    note:"Reporters, analysts, creators, customers, KOLs, policymakers, executives. Trust transfers person to person. In all 75 job descriptions this tool was built from, this stayed human without exception.",
+    patterns:[/relationships? with/i,/build(ing)? (and maintain(ing)? )?(strong |trusted |deep )?(working )?relationships?/i,/media relations/i,/analyst relations/i,/influencer relations/i,/influencers?\b/i,/creator (partnerships?|strategy|engagement|econom|ecosystems?)/i,/press (relations|engagement)/i,/kols?\b/i,/hill staff/i,/reporters?, editors/i,/journalists?/i,/community (building|engagement)/i,/networking/i,/stakeholder (engagement|relationships?|management)/i,/partner(ships)? (marketing|relationships?)/i] },
+  { id:"face", bucket:3, name:"Being the accountable face", travel:"stable",
+    note:"Spokesperson duties, on-the-record moments, briefings you deliver in person. Someone's name and credibility is attached, and it's yours.",
+    patterns:[/spokespersons?|spokespeople/i,/press[- ]?facing/i,/press secretary/i,/primary (point of contact|media contact|press)/i,/on[- ]the[- ]record/i,/serve as.{0,30}(liaison|the face|spokesperson)/i,/represent(ing)?.{0,30}(the (company|organization|brand)|clients?|at (events|conferences))/i,/deliver(ing)? briefings/i] },
+  { id:"judgment", bucket:3, name:"Live judgment under pressure", travel:"stable",
+    note:"The crisis decision itself: what to say, what not to say, when silence is the move. An AI-equipped human makes this call faster and better informed, but makes it themselves.",
+    patterns:[/judgment.{0,40}(high[- ]pressure|tight deadlines|evolving|under pressure)/i,/high[- ]?(pressure|stakes)/i,/real[- ]?time (guidance|counsel|response)/i,/tight (deadlines|timelines)/i,/sensitive (matters|information|situations|topics)/i,/sound judg?ment/i] },
+  { id:"counsel", bucket:3, name:"Executive counsel and trusted advising", travel:"stable",
+    note:"Being the person leaders call before they speak. Built on judgment they've watched you exercise, not on output volume.",
+    patterns:[/trusted (advisor|partner|strategic)/i,/strategic (counsel|advisor|counselor|thought partner)/i,/advis(e|ing|or) (to |the )?(senior|executive|c[- ]suite|leadership)/i,/counsel to/i,/executive presence/i,/serve as a (strategic|trusted)/i] },
+  { id:"leading", bucket:3, name:"Leading and developing people", travel:"stable",
+    note:"Coaching, mentoring, hiring, setting the bar, influencing without authority, driving behavior change. AI can prep you for these conversations; it cannot have them.",
+    patterns:[/lead(ing)? (and (develop|mentor|coach|grow)(ing)? )?a team/i,/lead, (develop|coach|mentor|inspire)/i,/inspire (a |the )?.{0,25}team/i,/manage(ing)? (a team|direct reports|the team|and (develop|nurture))/i,/coach(ing)?/i,/mentor(ship|ing)?/i,/develop(ing)? (a team|talent|communications professionals|team members)/i,/hire|hiring|recruit/i,/people (management|leadership)/i,/influence without (direct )?authority/i,/matrixed/i,/foster(ing)? (a culture|collaboration|engagement)/i,/convene/i,/direct reports/i] },
+  { id:"priorities", bucket:3, name:"Prioritization with real tradeoffs", travel:"stable",
+    note:"What gets resourced, what gets killed, where budget goes. Pure judgment with consequences attached.",
+    patterns:[/budget/i,/prioriti[sz]/i,/resource (allocation|management|allocat)/i,/deploy(ing)? (budget|spend)/i,/decide (what|where)/i,/tradeoffs?/i,/what gets (content|resourced)/i] },
+  { id:"extraction", bucket:3, name:"Extracting knowledge from humans", travel:"stable",
+    note:"The whiteboard session with your technical lead, the customer interview, the exec's real opinion. Getting it out of someone's head is human work. Scaling it afterward is AI work.",
+    patterns:[/subject matter experts?|smes?\b/i,/whiteboard/i,/interview(ing)? (customers?|researchers|authors|executives)/i,/source (and interview|thought leadership|stories|customer)/i,/sit(ting)? with (our|the) (cto|engineers|product)/i,/work(ing)? (closely |directly )?with (engineers|technical|product teams|clinical)/i] },
+  { id:"vendors", bucket:3, name:"Vendor and agency management", travel:"stable",
+    note:"Briefing well, negotiating, holding partners accountable, deciding when to walk away. Tracking their performance against deliverables is AI work; the accountability relationship is not.",
+    patterns:[/agenc(y|ies)/i,/vendors?/i,/consultants?/i,/external partners?/i,/freelancers?/i,/manage(ing)?.{0,30}(pr |creative |media |external )?(agency|agencies|partners|vendors)/i,/hold(ing)? partners accountable/i] },
+  { id:"advocacy", bucket:3, name:"Advocacy sourcing", travel:"stable",
+    note:"Getting a customer, peer, or practitioner to publicly vouch for you is relationship work. Producing the case study or video afterward is heavily AI-assisted. Two different tasks wearing one name.",
+    patterns:[/advocacy/i,/customer (references?|advocates?|advocacy)/i,/advisory board/i,/peer review (sites|programs|platforms)/i,/speaker (bureau|sourcing)/i,/awards? submissions?/i,/secure (speaking|references)/i] },
+  { id:"aiarch", bucket:3, name:"Architecting the AI systems themselves", travel:"stable",
+    note:"Deciding which workflows get automated, building them, and knowing what should NOT be automated. The newest human skill in marketing and comms, and now an explicit requirement across much of the market.",
+    patterns:[/ai[- ](powered|first|native|driven|enabled)/i,/\bai (tools?|workflows?|systems?|agents?|adoption|fluency|automation)/i,/artificial intelligence/i,/\bllms?\b/i,/genai|generative ai/i,/automat(e|ion|ed) (workflows?|systems?|processes)/i,/build(ing)? (systems|automations)/i,/geo\b|aio\b|ai[- ]search|agent[- ]mediated/i,/prompt/i] },
+  { id:"taste", bucket:3, name:"Creative direction and taste", travel:"stable",
+    note:"Setting the quality bar, reviewing and approving work, killing what isn't good enough, guarding the brand. AI multiplies creative options at near-zero cost, which makes taste MORE valuable, not less: someone has to be the filter, and the filter is the job.",
+    patterns:[/creative (direction|excellence|judgment|judgement|standards|vision)/i,/review and approve/i,/approve (campaign|creative|content)/i,/quality (bar|benchmarks|standards)/i,/portfolio/i,/art direction/i,/creative director/i,/brand (guardianship|steward|guidelines|consistency|standards)/i,/creative (briefs?|instincts)/i,/taste/i] },
+  { id:"culture", bucket:3, name:"Cultural judgment", travel:"stable",
+    note:"Deciding when and how a brand credibly participates in a cultural moment. AI surfaces the trend in seconds; whether your brand belongs in it is a human call with asymmetric downside. Knowing when bold is brilliant and when bold is a screenshot waiting to happen.",
+    patterns:[/cultural (relevance|moments?|fluency|participation|listening|marketing|attention)/i,/culturally (relevant|present|fluent)/i,/trendspotting/i,/emerging trends.{0,40}(cultural|social)/i,/real[- ]time.{0,30}(cultural|moments|decisions about)/i,/zeitgeist|memes?\b/i,/participate in (cultural|the) (moments?|conversation)/i] },
+  { id:"presence", bucket:3, name:"Physical presence", travel:"stable",
+    note:"Trade shows, on-site event execution, live briefings, face-to-face work. Being there is human by definition. The shell around it (logistics docs, run-of-show, signage specs, follow-ups) is AI work.",
+    patterns:[/trade shows?/i,/on[- ]?site/i,/in[- ]?person/i,/face[- ]?to[- ]?face/i,/event (execution|coordination|planning|logistics|marketing)/i,/town halls?/i,/conferences?/i,/field marketing/i,/on[- ]the[- ]ground/i,/travel (across|to|up to|required)/i,/executive briefings|cxo forums|roundtables/i] }
+];
+
+/* ---------- Context modifiers ---------- */
+const REGULATED = [/litigation/i,/regulator/i,/regulated/i,/hipaa/i,/fda\b/i,/compliance/i,/healthcare|health care|patients?|clinical|payers?|payors?/i,/financial services|bank(s|ing)?|fintech|credit union/i,/legal (review|counsel|proceedings)/i,/government|federal|public sector|agenc(y|ies).{0,20}(government|federal)/i,/defense|military|aerospace/i,/policy|public affairs|advocacy.{0,20}(policy|regulat)/i,/securities|investor relations/i];
+const RESTRICTED = [/security clearance/i,/top secret/i,/\bts\/sci\b/i,/classified/i,/clearance/i];
+const SENIOR_T = [/\b(director|vp|vice president|head of|chief|cco|cmo|svp|evp|senior director|principal)\b/i];
+const MID_T = [/\b(senior manager|manager|lead\b|team lead)\b/i];
+const EARLY_T = [/\b(coordinator|associate|assistant|specialist|intern|entry[- ]level)\b/i];
+const PRESENCE_TRACK = [/field marketing/i,/face[- ]?to[- ]?face/i,/fully onsite/i,/on[- ]?site/i,/in[- ]person/i,/brand ambassador/i,/multimedia (producer|production)/i,/premiere|after effects|final cut/i];
+
+function detectStage(text){
+  // years of experience
+  let years = null;
+  const ym = text.match(/(\d{1,2})\s*(?:\+|\s*[-–to]+\s*\d{1,2})?\s*\+?\s*years?/i);
+  if (ym) years = parseInt(ym[1],10);
+  const first500 = text.slice(0,600);
+  if (SENIOR_T.some(r=>r.test(first500)) || (years!==null && years>=11)) return "senior";
+  if (MID_T.some(r=>r.test(first500)) || (years!==null && years>=6)) return "mid";
+  if (EARLY_T.some(r=>r.test(first500)) || (years!==null && years<6)) return "early";
+  if (SENIOR_T.some(r=>r.test(text))) return "senior";
+  if (EARLY_T.some(r=>r.test(text))) return "early";
+  return "mid";
+}
+
+function snippet(text, match){
+  const i = text.search(match);
+  if (i < 0) return "";
+  const start = Math.max(0, i-40), end = Math.min(text.length, i+70);
+  return "…" + text.slice(start,end).replace(/\s+/g," ").trim() + "…";
+}
+
+function analyze(){
+  const text = document.getElementById("jd").value;
+  const res = document.getElementById("results");
+  if (!text || text.trim().length < 100){
+    alert("Paste a fuller job description first. The responsibilities section is the part that matters most.");
+    return;
+  }
+
+  // detections
+  let stage = document.getElementById("stage").value;
+  if (stage === "auto") stage = detectStage(text);
+  let ctxSel = document.getElementById("ctx").value;
+  const restrictedHit = RESTRICTED.some(r=>r.test(text));
+  const regulatedHit = REGULATED.some(r=>r.test(text));
+  let ctx = ctxSel;
+  if (ctxSel === "auto") ctx = restrictedHit ? "restricted" : (regulatedHit ? "regulated" : "standard");
+  const presenceTrack = stage==="early" && PRESENCE_TRACK.some(r=>r.test(text));
+
+  // match rules
+  const matched = [];
+  for (const rule of RULES){
+    for (const p of rule.patterns){
+      if (p.test(text)){ matched.push({rule, snip:snippet(text,p)}); break; }
+    }
+  }
+
+  // weights with regulated shift
+  let w1=0,w2=0,w3=0;
+  for (const m of matched){
+    if (m.rule.bucket===1){ if(ctx!=="standard"){w1+=0.6;w2+=0.4;} else w1+=1; }
+    else if (m.rule.bucket===2){ if(ctx!=="standard"){w2+=0.7;w3+=0.3;} else w2+=1; }
+    else w3+=1;
+  }
+  const total = w1+w2+w3;
+
+  // render
+  res.style.display = "block";
+  const stageNames = {early:"early career (0-5 yrs)", mid:"mid-level (6-10 yrs)", senior:"senior / leadership (11+ yrs)"};
+  const ctxNames = {standard:"standard industry", regulated:"regulated industry", restricted:"restricted environment"};
+  document.getElementById("stageLine").innerHTML =
+    "Read as: <strong>" + stageNames[stage] + "</strong> role in a <strong>" + ctxNames[ctx] + "</strong> context. " +
+    matched.length + " responsibility patterns detected. Change the dropdowns above and re-run if that's wrong.";
+
+  const bar = document.getElementById("bar");
+  if (total === 0){ bar.innerHTML=""; }
+  else {
+    const p1=Math.round(w1/total*100), p2=Math.round(w2/total*100), p3=100-p1-p2;
+    bar.innerHTML =
+      '<div class="s1" style="width:'+p1+'%">'+(p1>=9?p1+"%":"")+'</div>' +
+      '<div class="s2" style="width:'+p2+'%">'+(p2>=9?p2+"%":"")+'</div>' +
+      '<div class="s3" style="width:'+p3+'%">'+(p3>=9?p3+"%":"")+'</div>';
+  }
+
+  // banners
+  let banners = "";
+  if (matched.length < 5){
+    banners += '<div class="banner warn"><strong>This job description gave me little to work with.</strong> Either it\'s very short, very vague, or it describes work this tool hasn\'t been taught to recognize. Treat the results below as incomplete rather than as a verdict. If the JD is thin on actual responsibilities, that itself is worth noticing.</div>';
+  }
+  if (ctx==="restricted"){
+    banners += '<div class="banner warn"><strong>Restricted environment detected.</strong> Clearance and classified settings can prohibit AI tools entirely, regardless of how automatable a task looks on paper. In that world, everything below shifts toward human by rule, not by choice. Check your organization\'s policy before acting on anything here.</div>';
+  } else if (ctx==="regulated"){
+    banners += '<div class="banner note"><strong>Regulated industry detected.</strong> Legal review, compliance sign-off, and consent requirements attach to work that would be routine elsewhere. Estimates here have been shifted toward human accordingly. A customer story in SaaS is a quick draft; a patient story in healthcare is not.</div>';
+  }
+  document.getElementById("banners").innerHTML = banners;
+
+  // buckets
+  const meta = [
+    {n:1, title:"AI can largely handle it", cls:"b1", color:"var(--b1)", desc:"Pattern-based work with established formats. A human spot-checks; AI does most of the labor. These tasks eat a disproportionate share of the week, which is exactly why handing them off matters."},
+    {n:2, title:"AI assists, human drives", cls:"b2", color:"var(--b2)", desc:"AI speeds up the drafting, research, or analysis, but the output only works because a human shaped the framing, verified the accuracy, or made the call."},
+    {n:3, title:"Human required", cls:"b3", color:"var(--b3)", desc:"Trust, relationships, live judgment, accountability, leadership. AI can prep you for these moments. It cannot be in them."}
+  ];
+  let out = "";
+  for (const b of meta){
+    const items = matched.filter(m=>m.rule.bucket===b.n);
+    out += '<div class="bucket"><h2><span class="dot" style="background:'+b.color+'"></span>'+b.title+'</h2><p class="desc">'+b.desc+'</p>';
+    if (!items.length){ out += '<p class="empty">Nothing detected in this bucket for this JD.</p>'; }
+    for (const m of items){
+      let flags = "";
+      if (m.rule.travel==="shifting") flags += '<span class="flag shift">shifting toward AI</span>';
+      else flags += '<span class="flag" style="background:#233150;color:#a9b6cd">stable</span>';
+      if (m.rule.reps && stage==="early") flags += '<span class="flag reps">keep your reps</span>';
+      if (ctx!=="standard" && m.rule.bucket<3) flags += '<span class="flag mod">' + (ctx==="restricted"?"env. may block AI":"needs review layer") + '</span>';
+      out += '<div class="task"><div class="top"><span class="name">'+m.rule.name+'</span>'+flags+'</div>' +
+             '<div class="note">'+m.rule.note+'</div>' +
+             (m.snip ? '<div class="snip">Matched: "'+m.snip.replace(/</g,"&lt;")+'"</div>' : "") + '</div>';
+    }
+    out += '</div>';
+  }
+  document.getElementById("buckets").innerHTML = out;
+
+  // stage callouts
+  let call = "";
+  if (stage==="early" && presenceTrack){
+    call += '<div class="callout"><h3>Early career, presence track</h3><p>This role runs on showing up: in-person work, live events, hands-on craft. That makes it one of the least AI-exposed job types we found across 75 real JDs, which surprises people. Your moat is presence and speed of craft. Use AI for the paperwork that surrounds the showing up: recaps, follow-ups, scheduling, research before you walk in the door.</p></div>';
+  } else if (stage==="early"){
+    call += '<div class="callout"><h3>Early career: automate the volume, keep your reps</h3><p>The tasks flagged "keep your reps" above are automatable AND foundational. Writing the hundredth routine draft is how you develop the instincts that senior roles run on. So don\'t hand it all to AI. Automate the volume, keep some reps, and use AI as a sparring partner that critiques your draft rather than a ghostwriter that replaces it. You\'ll build skill faster than the old way, not slower.</p><p>One more thing: across every job description this tool was built from, relationship building stayed human without a single exception. Reps and relationships are the two career investments AI can\'t make for you.</p></div>';
+  } else if (stage==="senior"){
+    call += '<div class="callout"><h3>Leadership note</h3><p>Automate freely for your own plate. But the entry-level version of your function is where your future senior people are building judgment right now, and the tasks AI absorbs first are their training ground. Set up junior roles so your people still get their reps. That\'s how you build your bench.</p><p>Also notice how much of your bucket three is architecture: deciding what gets automated and what shouldn\'t. That\'s the newest human skill in this field, and the market is already hiring for it.</p></div>';
+  } else {
+    call += '<div class="callout"><h3>Mid-level note</h3><p>Mid-level roles sit at the pivot point: enough execution that AI gives back real hours, enough judgment work that those hours have somewhere valuable to go. The move is deliberate reinvestment. Every hour AI returns from the left column should go into the right one: relationships, counsel, and the human moments that make the next promotion make sense.</p></div>';
+  }
+  call += '<div class="callout" style="border-left-color:var(--b2)"><h3>The honest caveat</h3><p>Bucket assignments drift. Tasks marked "shifting" are moving toward more automation as tools improve, so treat bucket two as a place to build leverage, not a place to hide. And this analysis is pattern matching against a rulebook built from 75 real job descriptions; it recognizes what it has been taught and misses what it hasn\'t. It\'s a starting point for a conversation about your work, not a verdict on your career.</p></div>';
+  document.getElementById("callouts").innerHTML = call;
+
+  res.scrollIntoView({behavior:"smooth", block:"start"});
+}
+</script>
+</body>
+</html>
