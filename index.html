@@ -7,32 +7,34 @@
 <meta name="description" content="AI Role Mapper: paste a marketing or communications job description. See what AI can take off your plate, where it assists, and where you're irreplaceable. Built from 75 real job descriptions.">
 <style>
   :root{
-    --ink:#eef2f8; --ink-soft:#b7c2d6; --ink-faint:#8494ac;
-    --bg:#0e1a2b; --card:#16243a; --line:#2a3a55;
-    --b1:#3fae92; --b1-soft:#153229;
-    --b2:#d9a24a; --b2-soft:#33270f;
-    --b3:#8f93e0; --b3-soft:#20244a;
-    --warn:#e07a5c; --warn-soft:#361a10;
+    --ink:#f0ede6; --ink-soft:rgba(240,237,230,.78); --ink-faint:rgba(240,237,230,.55);
+    --bg:#0d275d; --bg-deep:#081b45; --card:#112e68; --line:rgba(240,237,230,.18);
+    --cyan:#00e5ff;
+    --b1:#2ec4b6; --b1-soft:rgba(46,196,182,.16);
+    --b2:#e8734a; --b2-soft:rgba(232,115,74,.16);
+    --b3:#4a21c1; --b3-soft:rgba(122,92,230,.22);
+    --warn:#e8734a; --warn-soft:rgba(232,115,74,.13);
+    --shadow:0 18px 46px rgba(4,12,32,.35);
     --radius:14px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;padding:0 20px 80px}
   .wrap{max-width:860px;margin:0 auto}
   header{padding:56px 0 8px;text-align:center}
-  header h1{font-size:clamp(26px,4.5vw,40px);line-height:1.15;letter-spacing:-0.02em}
-  header p.tagline{margin-top:12px;font-size:16px;font-weight:650;color:var(--ink-soft);letter-spacing:.01em}
+  header h1{font-size:clamp(26px,4.5vw,40px);line-height:1.15;letter-spacing:-0.02em;color:#ffffff}
+  header p.tagline{margin-top:12px;font-size:14px;font-weight:700;color:var(--cyan);letter-spacing:.14em;text-transform:uppercase}
   header p.sub{margin:26px auto 0;max-width:560px;color:var(--ink-soft);font-size:16px}
   .badge-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
   .chip{font-size:12.5px;padding:5px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink-soft)}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-top:28px}
-  textarea{width:100%;min-height:230px;border:1px solid var(--line);border-radius:10px;padding:16px;font-size:14.5px;font-family:inherit;color:var(--ink);resize:vertical;background:#101d31}
-  textarea:focus{outline:2px solid var(--b1);outline-offset:1px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin-top:28px;box-shadow:var(--shadow)}
+  textarea{width:100%;min-height:230px;border:1px solid var(--line);border-radius:10px;padding:16px;font-size:14.5px;font-family:inherit;color:var(--ink);resize:vertical;background:var(--bg-deep)}
+  textarea:focus{outline:2px solid var(--cyan);outline-offset:1px}
   .controls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-top:16px}
   .field{display:flex;flex-direction:column;gap:5px}
-  .field label{font-size:12.5px;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
+  .field label{font-size:12.5px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em}
   select{padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--card);font-size:14px;color:var(--ink);font-family:inherit}
-  button.go{margin-left:auto;background:#eef2f8;color:#0e1a2b;border:none;border-radius:10px;padding:13px 28px;font-size:15.5px;font-weight:600;cursor:pointer;font-family:inherit}
-  button.go:hover{background:#ffffff}
+  button.go{margin-left:auto;background:var(--b1);color:#06213f;border:none;border-radius:10px;padding:13px 28px;font-size:15.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  button.go:hover{background:#45d6c8}
   .hint{font-size:12.5px;color:var(--ink-faint);margin-top:10px}
   /* results */
   #results{display:none}
@@ -46,9 +48,9 @@
   .legend .l1::before{background:var(--b1)} .legend .l2::before{background:var(--b2)} .legend .l3::before{background:var(--b3)}
   .disclaim{font-size:12.5px;color:var(--ink-faint);margin-top:8px}
   .banner{border-radius:10px;padding:14px 16px;font-size:14px;margin-top:16px;border:1px solid}
-  .banner.warn{background:var(--warn-soft);border-color:#5c3021;color:#f3b7a3}
-  .banner.info{background:var(--b3-soft);border-color:#3a3f7a;color:#c3c6f2}
-  .banner.note{background:var(--b2-soft);border-color:#5a4517;color:#ecc98a}
+  .banner.warn{background:var(--warn-soft);border-color:rgba(232,115,74,.45);color:#f5b39a}
+  .banner.info{background:var(--b3-soft);border-color:rgba(122,92,230,.45);color:#cbbcff}
+  .banner.note{background:rgba(0,229,255,.08);border-color:rgba(0,229,255,.35);color:#9ff0ff}
   .banner strong{display:block;margin-bottom:3px}
   .bucket{margin-top:30px}
   .bucket h2{font-size:19px;display:flex;align-items:center;gap:10px}
@@ -58,9 +60,9 @@
   .task .top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
   .task .name{font-weight:650;font-size:15px}
   .flag{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
-  .flag.shift{background:var(--b2-soft);color:#e5b569}
-  .flag.reps{background:var(--b1-soft);color:#8ddcc3}
-  .flag.mod{background:var(--warn-soft);color:#f0a88e}
+  .flag.shift{background:var(--b2-soft);color:#f5b28f}
+  .flag.reps{background:var(--b1-soft);color:#7fe6dc}
+  .flag.mod{background:var(--warn-soft);color:#ffab87}
   .task .note{font-size:13.5px;color:var(--ink-soft);margin-top:5px}
   .task .snip{font-size:12.5px;color:var(--ink-faint);margin-top:6px;font-style:italic}
   .empty{font-size:14px;color:var(--ink-faint);margin-left:23px}
@@ -68,12 +70,12 @@
   .callout h3{font-size:16px;margin-bottom:6px}
   .callout p{font-size:14px;color:var(--ink-soft)}
   .callout p+p{margin-top:8px}
-  details.method{margin-top:40px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 24px}
+  details.method{margin-top:40px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow)}
   details.method summary{font-weight:650;cursor:pointer;font-size:15.5px}
   details.method .inner{margin-top:12px;font-size:14px;color:var(--ink-soft)}
   details.method .inner p+p{margin-top:10px}
   footer{margin-top:56px;text-align:center;font-size:13.5px;color:var(--ink-faint)}
-  footer a{color:var(--ink-soft)}
+  footer a{color:var(--cyan)}
   @media (max-width:600px){ .bar div{font-size:10.5px} }
 </style>
 </head>
@@ -385,7 +387,7 @@ function analyze(){
     for (const m of items){
       let flags = "";
       if (m.rule.travel==="shifting") flags += '<span class="flag shift">shifting toward AI</span>';
-      else flags += '<span class="flag" style="background:#233150;color:#a9b6cd">stable</span>';
+      else flags += '<span class="flag" style="background:rgba(240,237,230,.12);color:#d8d5cc">stable</span>';
       if (m.rule.reps && stage==="early") flags += '<span class="flag reps">keep your reps</span>';
       if (ctx!=="standard" && m.rule.bucket<3) flags += '<span class="flag mod">' + (ctx==="restricted"?"env. may block AI":"needs review layer") + '</span>';
       out += '<div class="task"><div class="top"><span class="name">'+m.rule.name+'</span>'+flags+'</div>' +
