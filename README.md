@@ -6,7 +6,9 @@ A free, browser-based tool built for marketing and communications roles. Paste a
 2. **AI assists, human drives.** Work where AI speeds things up but a human owns the framing, accuracy, or the call: high-stakes writing, strategy, translating complexity, crisis support.
 3. **Human required.** Trust, relationships, live judgment, leading people, being the accountable face. AI can prep you for these moments; it cannot be in them.
 
-Try it: open `index.html` in any browser, or visit the hosted version via GitHub Pages.
+**Try it live: [austley.github.io/ai-role-mapper](https://austley.github.io/ai-role-mapper/)**
+
+Or open `index.html` in any browser; the whole tool is that one file.
 
 ## What makes it different
 
